@@ -1,0 +1,151 @@
+.dashboard-container {
+  min-height: 100vh;
+  background-color: #f9f9f9;
+}
+
+.app-header {
+  background-color: white !important;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.search-container {
+  flex-grow: 1;
+  max-width: 600px;
+  margin-right: 2rem;
+}
+
+.header-icon {
+  color: #666;
+}
+
+.dashboard-content {
+  padding: 2rem 1.5rem;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.welcome-text {
+  font-weight: 600;
+  color: #333;
+}
+
+.create-button {
+  background-color: #3f51b5 !important;
+  box-shadow: 0 4px 12px rgba(63, 81, 181, 0.2) !important;
+  border-radius: 8px !important;
+  padding: 0.6rem 1.5rem !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.create-button:hover {
+  background-color: #303f9f !important;
+  box-shadow: 0 6px 16px rgba(63, 81, 181, 0.3) !important;
+  transform: translateY(-2px);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.events-grid {
+  margin-bottom: 2rem;
+}
+
+.event-card {
+  height: 100%;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.3s ease !important;
+  overflow: hidden;
+}
+
+.event-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+}
+
+.event-category {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  margin-bottom: 0.8rem;
+  text-transform: uppercase;
+}
+
+.event-category[data-category="Meeting"] {
+  background-color: rgba(63, 81, 181, 0.1);
+  color: #3f51b5;
+}
+
+.event-category[data-category="Conference"] {
+  background-color: rgba(156, 39, 176, 0.1);
+  color: #9c27b0;
+}
+
+.event-category[data-category="Workshop"] {
+  background-color: rgba(255, 152, 0, 0.1);
+  color: #ff9800;
+}
+
+.event-category[data-category="Social"] {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+}
+
+.event-category[data-category="Team Building"] {
+  background-color: rgba(0, 188, 212, 0.1);
+  color: #00bcd4;
+}
+
+.event-title {
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #333;
+  line-height: 1.4;
+}
+
+.event-details {
+  margin-bottom: 1.5rem;
+}
+
+.event-detail-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  color: #666;
+}
+
+.event-detail-item svg {
+  margin-right: 0.5rem;
+  color: #3f51b5;
+}
+
+.view-details-button {
+  margin-top: auto;
+  text-transform: none !important;
+  font-weight: 500 !important;
+  border-radius: 8px !important;
+}
+
+@media (max-width: 960px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dashboard-header .create-button {
+    margin-top: 1rem;
+    align-self: flex-start;
+  }
+} 
