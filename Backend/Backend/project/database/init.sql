@@ -1,7 +1,5 @@
--- Initialize Eventify MySQL Database Schema
 
--- Drop the database if it exists and create a new one
-DROP DATABASE IF EXISTS projectweb;
+DROP DATABASE IF EXISTS eventify;
 CREATE DATABASE projectweb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE projectweb;
 
@@ -10,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `Users` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `firstName` VARCHAR(255),
   `lastName` VARCHAR(255),
-  `username` VARCHAR(255) NOT NULL UNIQUE,
+  `username` VARCHAR(255) UNIQUE,
   `email` VARCHAR(255) NOT NULL UNIQUE,
   `password` VARCHAR(255) NOT NULL,
   `createdAt` DATETIME DEFAULT CURRENT_TIMESTAMP,

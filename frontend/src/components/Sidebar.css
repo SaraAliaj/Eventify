@@ -98,7 +98,7 @@
 }
 
 .sidebar-divider {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: var(--linwood-sands);
   margin: 0 0.5rem;
 }
 
@@ -116,15 +116,15 @@
 }
 
 .sidebar-item:hover {
-  background-color: rgba(160, 174, 193, 0.2); /* Windy Blue with transparency */
+  background-color: var(--upward);
 }
 
 .sidebar-item-active {
   margin: 0.1rem 0.4rem;
   padding: 0.3rem 0.5rem;
   border-radius: 8px;
-  background-color: rgba(160, 174, 193, 0.3); /* Windy Blue with transparency */
-  border-left: 4px solid #F2F2ED; /* Alabaster (SW7008) */
+  border-left: 4px solid var(--alabaster);
+  background-color: var(--windy-blue);
   font-size: 0.97rem;
 }
 

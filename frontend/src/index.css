@@ -1,3 +1,29 @@
+:root {
+  --naval: #223A50; /* SW6244 Naval */
+  --windy-blue: #7C98B3; /* SW6240 Windy Blue */
+  --upward: #C3CEDA; /* SW6239 Upward */
+  --linwood-sands: #D1C9B8; /* HGSW 2506 Linwood Sands */
+  --alabaster: #F2F2ED; /* SW7008 Alabaster */
+}
+
+/* Example: Use palette for small UI elements */
+.button-primary {
+  background: var(--naval);
+  color: var(--alabaster);
+}
+.button-primary:hover {
+  background: var(--windy-blue);
+}
+
+hr, .divider {
+  border-color: var(--linwood-sands);
+}
+
+input:focus, select:focus {
+  border-color: var(--upward);
+  box-shadow: 0 0 0 2px var(--windy-blue);
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
