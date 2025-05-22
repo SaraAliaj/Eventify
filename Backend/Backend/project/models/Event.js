@@ -32,6 +32,11 @@ const Event = sequelize.define('Event', {
         type: DataTypes.STRING(50),
         allowNull: true
     },
+    capacity: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: 10
+    },
     userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
