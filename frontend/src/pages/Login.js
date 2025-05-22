@@ -16,7 +16,30 @@ const Login = () => {
   
   useEffect(() => {
     setLoaded(true);
-  }, []);
+    
+    // Clear previous session if redirect=true
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('redirect') === 'true') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      return;
+    }
+    
+    // Check if user is already authenticated
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Check the user role and redirect appropriately
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      if (user && user.role) {
+        console.log('User already logged in:', user);
+        if (user.role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/dashboard');
+        }
+      }
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,14 +59,38 @@ const Login = () => {
       
       // Make the actual API call to login
       const response = await authService.login(formData);
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+      console.log('Login response:', response.data);
       
-      navigate('/dashboard');
-      setLoading(false);
+      const { token, user } = response.data;
+      
+      // Validate that we have a user object with role
+      if (!user || !user.role) {
+        console.error('Invalid user data received:', user);
+        setError('Të dhënat e përdoruesit janë të pasakta');
+        setLoading(false);
+        return;
+      }
+      
+      // Store auth data in localStorage
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      
+      console.log('User logged in successfully:', user);
+      console.log('User role:', user.role);
+      
+      // Redirect based on user role
+      if (user.role === 'admin') {
+        console.log('Redirecting to admin panel');
+        navigate('/admin');
+      } else {
+        console.log('Redirecting to user dashboard');
+        navigate('/dashboard');
+      }
       
     } catch (err) {
+      console.error('Login error:', err);
       setError(err.response?.data?.message || 'Ndodhi një gabim gjatë hyrjes');
+    } finally {
       setLoading(false);
     }
   };

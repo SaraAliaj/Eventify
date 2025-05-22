@@ -10,7 +10,8 @@ const Register = () => {
     firstName: '',
     lastName: '',
     email: '',
-    password: ''
+    password: '',
+    role: 'user' // Default role is user
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -18,7 +19,20 @@ const Register = () => {
   
   useEffect(() => {
     setLoaded(true);
-  }, []);
+    
+    // Check if user is already logged in
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    
+    if (token && user) {
+      console.log('User already logged in:', user);
+      if (user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,13 +52,26 @@ const Register = () => {
       
       // Make the actual API call to register
       const response = await authService.register(formData);
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+      console.log('Registration response:', response.data);
       
-      navigate('/dashboard');
+      const { token, user } = response.data;
+      
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      
+      console.log('User registered successfully:', user);
+      
+      // Redirect based on user role
+      if (user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
+      
       setLoading(false);
       
     } catch (err) {
+      console.error('Registration error:', err);
       setError(err.response?.data?.message || 'Ndodhi një gabim gjatë regjistrimit');
       setLoading(false);
     }
