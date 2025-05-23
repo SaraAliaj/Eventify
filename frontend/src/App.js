@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
+import Events from './pages/Events';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import './App.css';
@@ -171,6 +172,14 @@ function App() {
               element={
                 <ProtectedRoute requiredRole="user">
                   <Dashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/events" 
+              element={
+                <ProtectedRoute requiredRole="user">
+                  <Events />
                 </ProtectedRoute>
               } 
             />
