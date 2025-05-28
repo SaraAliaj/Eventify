@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const User = require('./User');
 
 const Event = sequelize.define('Event', {
     id: {
@@ -32,27 +31,22 @@ const Event = sequelize.define('Event', {
         type: DataTypes.STRING(50),
         allowNull: true
     },
+    capacity: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: 10
+    },
     userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: User,
+            model: 'Users',
             key: 'id'
         }
     }
 }, {
     tableName: 'Events',
     timestamps: true
-});
-
-// Define relationship
-Event.belongsTo(User, {
-    foreignKey: 'userId',
-    as: 'creator'
-});
-User.hasMany(Event, {
-    foreignKey: 'userId',
-    as: 'events'
 });
 
 module.exports = Event; 

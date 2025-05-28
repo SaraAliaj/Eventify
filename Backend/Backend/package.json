@@ -1,12 +1,11 @@
 {
   "name": "eventify-backend",
   "version": "1.0.0",
-  "description": "Event management platform backend API",
+  "description": "Backend server for Eventify application",
   "main": "project/main.js",
   "scripts": {
     "start": "node project/main.js",
-    "dev": "nodemon project/main.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon project/main.js"
   },
   "keywords": [
     "eventify",
@@ -22,8 +21,7 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
     "mysql2": "^3.2.0",
-    "sequelize": "^6.30.0",
-    "sqlite3": "^5.1.6"
+    "sequelize": "^6.31.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"

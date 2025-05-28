@@ -1,239 +1,188 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Box, Typography, TextField, Button, Grid, Container, Alert, Fade } from '@mui/material';
-import { authService } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 import './Register.css';
 
 const Register = () => {
-  const navigate = useNavigate();
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: ''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [loaded, setLoaded] = React.useState(false);
-  
+  const [loaded, setLoaded] = useState(false);
+
   useEffect(() => {
     setLoaded(true);
   }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       [name]: value
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    // Validate passwords match
+    if (formData.password !== formData.confirmPassword) {
+      setError('Fjalëkalimet nuk përputhen');
+      return;
+    }
+
+    // Validate password strength
+    if (formData.password.length < 6) {
+      setError('Fjalëkalimi duhet të jetë të paktën 6 karaktere');
+      return;
+    }
+
     setLoading(true);
-    
+
     try {
-      console.log('Attempting registration with:', formData);
-      
-      // Make the actual API call to register
-      const response = await authService.register(formData);
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      
-      navigate('/dashboard');
-      setLoading(false);
-      
+      const result = await register({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        role: 'user' // Default role for new registrations
+      });
+
+      if (!result.success) {
+        setError(result.error);
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'Ndodhi një gabim gjatë regjistrimit');
+      setError('Ndodhi një gabim gjatë regjistrimit');
+    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Grid container className="register-container" 
-      sx={{ 
-        position: 'relative',
-        background: 'linear-gradient(120deg, #f2f2ed 60%, #e3e6f3 100%)',
-        backgroundImage: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.1"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
-        overflow: 'hidden',
-        minHeight: '100vh'
-      }}
-    >
-      {/* Animated background elements */}
-      <Box className="floating-circle" sx={{
-        position: 'absolute',
-        width: '300px',
-        height: '300px',
-        borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(67, 85, 185, 0.1) 0%, rgba(67, 85, 185, 0) 70%)',
-        top: '10%',
-        left: '5%',
-        animation: 'float 8s infinite ease-in-out'
-      }} />
-      
-      <Box className="floating-circle" sx={{
-        position: 'absolute',
-        width: '200px',
-        height: '200px',
-        borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(19, 41, 75, 0.08) 0%, rgba(19, 41, 75, 0) 70%)',
-        bottom: '15%',
-        right: '10%',
-        animation: 'float 12s infinite ease-in-out'
-      }} />
+    <Container maxWidth="xs" className="register-container">
+      <Fade in={loaded} timeout={1200}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            padding: 3,
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            borderRadius: 2,
+            boxShadow: 3
+          }}
+        >
+          <Typography component="h1" variant="h4" gutterBottom>
+            Regjistrohu
+          </Typography>
 
-      <Grid item xs={12} md={12} lg={12}>
-        <Box className="content-container" sx={{ position: 'relative', zIndex: 2 }}>
-          <Container maxWidth="sm">
-            <Fade in={loaded} timeout={800}>
-              <Box sx={{ textAlign: 'center', mb: 4, mt: 5 }}>
-                <Typography variant="h6" component={Link} to="/" sx={{ textDecoration: 'none', color: '#3f51b5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  Eventify
-                </Typography>
-              </Box>
-            </Fade>
-            
-            <Fade in={loaded} timeout={1000}>
-              <Typography variant="h4" component="h1" gutterBottom sx={{ 
-                fontWeight: 'bold', 
-                mb: 4, 
-                textAlign: 'center',
-                background: 'linear-gradient(45deg, #13294B, #4355B9)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}>
-                Krijo një llogari
+          {error && (
+            <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+
+          <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  name="firstName"
+                  label="Emri"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  name="lastName"
+                  label="Mbiemri"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  name="email"
+                  label="Email"
+                  type="email"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  name="password"
+                  label="Fjalëkalimi"
+                  type="password"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  name="confirmPassword"
+                  label="Konfirmo Fjalëkalimin"
+                  type="password"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  size="large"
+                  disabled={loading}
+                  sx={{ mt: 2 }}
+                >
+                  {loading ? 'Duke u regjistruar...' : 'Regjistrohu'}
+                </Button>
+              </Grid>
+            </Grid>
+          </form>
+
+          <Grid container justifyContent="center" sx={{ mt: 2 }}>
+            <Grid item>
+              <Typography variant="body2">
+                Keni një llogari?{' '}
+                <Link to="/login" style={{ color: 'primary.main', textDecoration: 'none' }}>
+                  Kyçu
+                </Link>
               </Typography>
-            </Fade>
-            
-            {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
-            
-            <Fade in={loaded} timeout={1200}>
-              <form onSubmit={handleSubmit}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      name="firstName"
-                      label="Emri"
-                      variant="outlined"
-                      fullWidth
-                      required
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      sx={{ 
-                        '& .MuiOutlinedInput-root': {
-                          background: 'rgba(255, 255, 255, 0.8)',
-                          transition: 'all 0.3s ease',
-                          '&:hover': {
-                            background: 'rgba(255, 255, 255, 0.95)',
-                          }
-                        }
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      name="lastName"
-                      label="Mbiemri"
-                      variant="outlined"
-                      fullWidth
-                      required
-                      value={formData.lastName}
-                      onChange={handleChange}
-                      sx={{ 
-                        '& .MuiOutlinedInput-root': {
-                          background: 'rgba(255, 255, 255, 0.8)',
-                          transition: 'all 0.3s ease',
-                          '&:hover': {
-                            background: 'rgba(255, 255, 255, 0.95)',
-                          }
-                        }
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      name="email"
-                      label="Email"
-                      type="email"
-                      variant="outlined"
-                      fullWidth
-                      required
-                      value={formData.email}
-                      onChange={handleChange}
-                      sx={{ 
-                        '& .MuiOutlinedInput-root': {
-                          background: 'rgba(255, 255, 255, 0.8)',
-                          transition: 'all 0.3s ease',
-                          '&:hover': {
-                            background: 'rgba(255, 255, 255, 0.95)',
-                          }
-                        }
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      name="password"
-                      label="Fjalëkalimi"
-                      type="password"
-                      variant="outlined"
-                      fullWidth
-                      required
-                      value={formData.password}
-                      onChange={handleChange}
-                      sx={{ 
-                        '& .MuiOutlinedInput-root': {
-                          background: 'rgba(255, 255, 255, 0.8)',
-                          transition: 'all 0.3s ease',
-                          '&:hover': {
-                            background: 'rgba(255, 255, 255, 0.95)',
-                          }
-                        }
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      fullWidth
-                      size="large"
-                      className="pulse-button"
-                      sx={{ 
-                        mt: 2, 
-                        py: 1.5,
-                        bgcolor: '#13294B',
-                        position: 'relative',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          bgcolor: '#21386a',
-                          transform: 'translateY(-3px)',
-                          boxShadow: '0 7px 20px rgba(19, 41, 75, 0.4)'
-                        }
-                      }}
-                      disabled={loading}
-                    >
-                      {loading ? 'Duke krijuar llogarinë...' : 'Krijo Llogari'}
-                    </Button>
-                  </Grid>
-                </Grid>
-              </form>
-            </Fade>
-            
-            <Fade in={loaded} timeout={1400}>
-              <Box sx={{ mt: 3, textAlign: 'center' }}>
-                <Typography variant="body2">
-                  Keni tashmë një llogari? <Link to="/login" style={{ color: '#3f51b5', textDecoration: 'none' }}>Hyrje</Link>
-                </Typography>
-              </Box>
-            </Fade>
-          </Container>
+            </Grid>
+          </Grid>
         </Box>
-      </Grid>
-    </Grid>
+      </Fade>
+    </Container>
   );
 };
 

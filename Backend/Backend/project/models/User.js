@@ -32,14 +32,19 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    createdAt: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
+    role: {
+        type: DataTypes.ENUM('user', 'admin'),
+        defaultValue: 'user',
+        allowNull: false
     }
+}, {
+    indexes: [
+        {
+            unique: true,
+            fields: ['email']
+        }
+    ],
+    timestamps: true
 });
 
 module.exports = User; 

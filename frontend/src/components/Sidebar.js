@@ -16,6 +16,9 @@ import InsightsIcon from '@mui/icons-material/Insights';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import HomeIcon from '@mui/icons-material/Home';
+import axios from 'axios';
 import './Sidebar.css';
 
 const Sidebar = () => {
@@ -23,6 +26,30 @@ const Sidebar = () => {
   const location = useLocation();
   const [currentTip, setCurrentTip] = useState(0);
   const [currentDate] = useState(new Date());
+  const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      
+      try {
+        const response = await axios.get('http://localhost:5000/api/auth/me', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        
+        setUser(response.data);
+        setIsAdmin(response.data.role === 'admin');
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+    
+    fetchCurrentUser();
+  }, []);
   
   const tipsList = [
     { 
@@ -112,7 +139,13 @@ const Sidebar = () => {
     return days;
   };
   
-  const menuItems = [
+  const baseMenuItems = [
+    { 
+      text: 'Faqja Kryesore', 
+      icon: <HomeIcon />, 
+      path: '/',
+      onClick: () => navigate('/')
+    },
     { 
       text: 'Paneli', 
       icon: <DashboardIcon />, 
@@ -122,34 +155,45 @@ const Sidebar = () => {
     { 
       text: 'Eventet e Mia', 
       icon: <EventIcon />, 
-      path: '/events',
-      onClick: () => navigate('/events') 
+      path: '/dashboard/events',
+      onClick: () => navigate('/dashboard/events') 
     },
     { 
       text: 'Kalendari', 
       icon: <CalendarMonthIcon />, 
-      path: '/calendar',
-      onClick: () => navigate('/calendar')
+      path: '/dashboard/calendar',
+      onClick: () => navigate('/dashboard/calendar')
     },
     { 
       text: 'Pjesëmarrësit', 
       icon: <PeopleIcon />, 
-      path: '/attendees',
-      onClick: () => navigate('/attendees')
+      path: '/dashboard/attendees',
+      onClick: () => navigate('/dashboard/attendees')
     },
     { 
       text: 'Njoftimet', 
       icon: <NotificationsActiveIcon />, 
-      path: '/notifications',
-      onClick: () => navigate('/notifications')
+      path: '/dashboard/notifications',
+      onClick: () => navigate('/dashboard/notifications')
     },
     { 
       text: 'Cilësimet', 
       icon: <SettingsIcon />, 
-      path: '/settings',
-      onClick: () => navigate('/settings')
+      path: '/dashboard/settings',
+      onClick: () => navigate('/dashboard/settings')
     }
   ];
+  
+  // Admin menu item
+  const adminMenuItem = { 
+    text: 'Admin', 
+    icon: <AdminPanelSettingsIcon />, 
+    path: '/admin',
+    onClick: () => navigate('/admin')
+  };
+  
+  // Add admin menu item if user is admin
+  const menuItems = isAdmin ? [...baseMenuItems, adminMenuItem] : baseMenuItems;
 
   return (
     <Box className="sidebar">

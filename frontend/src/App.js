@@ -1,11 +1,19 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import Layout from './components/Layout';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import Events from './pages/Events';
+import Calendar from './pages/Calendar';
+import Attendees from './pages/Attendees';
+import Notifications from './pages/Notifications';
+import Settings from './pages/Settings';
+import Admin from './pages/Admin';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import './App.css';
@@ -54,7 +62,26 @@ const theme = createTheme({
     '0px 4px 8px rgba(19, 41, 75, 0.08)',
     '0px 8px 16px rgba(19, 41, 75, 0.1)',
     '0px 12px 24px rgba(19, 41, 75, 0.12)',
-    // ...rest of the shadows array
+    '0px 14px 28px rgba(19, 41, 75, 0.14)',
+    '0px 16px 32px rgba(19, 41, 75, 0.16)',
+    '0px 18px 36px rgba(19, 41, 75, 0.18)',
+    '0px 20px 40px rgba(19, 41, 75, 0.2)',
+    '0px 22px 44px rgba(19, 41, 75, 0.22)',
+    '0px 24px 48px rgba(19, 41, 75, 0.24)',
+    '0px 26px 52px rgba(19, 41, 75, 0.26)',
+    '0px 28px 56px rgba(19, 41, 75, 0.28)',
+    '0px 30px 60px rgba(19, 41, 75, 0.3)',
+    '0px 32px 64px rgba(19, 41, 75, 0.32)',
+    '0px 34px 68px rgba(19, 41, 75, 0.34)',
+    '0px 36px 72px rgba(19, 41, 75, 0.36)',
+    '0px 38px 76px rgba(19, 41, 75, 0.38)',
+    '0px 40px 80px rgba(19, 41, 75, 0.4)',
+    '0px 42px 84px rgba(19, 41, 75, 0.42)',
+    '0px 44px 88px rgba(19, 41, 75, 0.44)',
+    '0px 46px 92px rgba(19, 41, 75, 0.46)',
+    '0px 48px 96px rgba(19, 41, 75, 0.48)',
+    '0px 50px 100px rgba(19, 41, 75, 0.5)',
+    '0px 52px 104px rgba(19, 41, 75, 0.52)'
   ],
   components: {
     MuiButton: {
@@ -67,21 +94,79 @@ const theme = createTheme({
   },
 });
 
+// Simplified Protected Route using AuthContext
+const ProtectedRoute = ({ children, requiredRole = null }) => {
+  const { isAuthenticated, checkRole, loading } = useAuth();
+
+  if (loading) {
+    return null; // Or a loading spinner
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+
+  if (requiredRole && !checkRole(requiredRole)) {
+    return <Navigate to={checkRole('admin') ? '/admin' : '/dashboard'} />;
+  }
+
+  return children;
+};
+
+// Wrap the main app content
+const AppContent = () => {
+  return (
+    <Routes>
+      {/* Public routes - No sidebar */}
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
+      
+      {/* Protected routes with Layout and Sidebar */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Dashboard />} />
+        <Route path="events" element={<Events />} />
+        <Route path="calendar" element={<Calendar />} />
+        <Route path="attendees" element={<Attendees />} />
+        <Route path="notifications" element={<Notifications />} />
+        <Route path="settings" element={<Settings />} />
+      </Route>
+      
+      {/* Admin route */}
+      <Route 
+        path="/admin" 
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <Admin />
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* Catch all - redirect authenticated users to dashboard, others to home */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+};
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <div className="app">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-          </Routes>
-        </div>
+        <AuthProvider>
+          <div className="app">
+            <AppContent />
+          </div>
+        </AuthProvider>
       </Router>
     </ThemeProvider>
   );
