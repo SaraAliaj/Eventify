@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: eventify-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/build
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: REACT_APP_API_URL
+        value: https://eventify-backend.onrender.com # This will be your backend URL
+
+  - type: web
+    name: eventify-backend
+    env: node
+    region: ohio  # Choose your preferred region
+    buildCommand: cd Backend/Backend && npm install
+    startCommand: cd Backend/Backend && node project/main.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true # Render will auto-generate a secure value
+      - key: DATABASE_URL
+        sync: false # You'll need to set this manually in Render dashboard
+    healthCheckPath: /api/health 

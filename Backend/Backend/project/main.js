@@ -59,6 +59,11 @@ app.get('/', (req, res) => {
     res.json({ message: 'Welcome to Eventify API' });
 });
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'healthy' });
+});
+
 // 404 handler
 app.use((req, res, next) => {
     console.log(`404 - Not Found: ${req.method} ${req.url}`);
